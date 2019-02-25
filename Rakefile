@@ -37,6 +37,12 @@ namespace :azure do
       '-p', ENV['AZURE_CLIENT_SECRET'],
       '--tenant', ENV['AZURE_TENANT_ID']
     )
+
+    sh(
+      'az', 'account',
+      'set',
+      '--subscription', ENV['AZURE_SUBSCRIPTION_ID']
+    )
   end
 end
 

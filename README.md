@@ -49,8 +49,10 @@ Since this is an InSpec resource pack, it only defines InSpec resources. To use 
 ```
 $ inspec init profile my-profile
 ```
+
 Example inspec.yml:
-```
+
+```yaml
 name: my-profile
 title: My own Oneview profile
 version: 0.1.0
@@ -66,7 +68,7 @@ supports:
 
 Verify properties of an Azure VM
 
-```
+```ruby
 control 'azurerm_virtual_machine' do
   describe azurerm_virtual_machine(resource_group: 'MyResourceGroup', name: 'prod-web-01') do
     it                                { should exist }
@@ -82,7 +84,7 @@ end
 
 Verify properties of a security group
 
-```
+```ruby
 control 'azure_network_security_group' do
   describe azure_network_security_group(resource_group: 'ProductionResourceGroup', name: 'ProdServers') do
     it                            { should exist }
@@ -109,10 +111,18 @@ The following resources are available in the InSpec Azure Resource Pack
 - [azurerm_key_vault_secret](docs/resources/azurerm_key_vault_secret.md.erb)
 - [azurerm_key_vault_secrets](docs/resources/azurerm_key_vault_secrets.md)
 - [azurerm_key_vaults](docs/resources/azurerm_key_vaults.md.erb)
+- [azurerm_load_balancer](docs/resources/azurerm_load_balancer.md.erb)
+- [azurerm_load_balancers](docs/resources/azurerm_load_balancers.md.erb)
 - [azurerm_monitor_activity_log_alert](docs/resources/azurerm_monitor_activity_log_alert.md.erb)
 - [azurerm_monitor_activity_log_alerts](docs/resources/azurerm_monitor_activity_log_alerts.md.erb)
 - [azurerm_monitor_log_profile](docs/resources/azurerm_monitor_log_profile.md.erb)
 - [azurerm_monitor_log_profiles](docs/resources/azurerm_monitor_log_profiles.md.erb)
+- [azurerm_mysql_database](docs/resources/azurerm_mysql_database.md.erb)
+- [azurerm_mysql_databases](docs/resources/azurerm_mysql_databases.md.erb)
+- [azurerm_mysql_server](docs/resources/azurerm_mysql_server.md.erb)
+- [azurerm_mysql_servers](docs/resources/azurerm_mysql_servers.md.erb)
+- [azurerm_network_interface](docs/resources/azurerm_network_interface.md.erb)
+- [azurerm_network_interfaces](docs/resources/azurerm_network_interfaces.md.erb)
 - [azurerm_network_security_group](docs/resources/azurerm_network_security_group.md.erb)
 - [azurerm_network_security_groups](docs/resources/azurerm_network_security_groups.md.erb)
 - [azurerm_network_watcher](docs/resources/azurerm_network_watcher.md.erb)
@@ -145,7 +155,8 @@ If you'd like to contribute to this project please see [Contributing Rules](CONT
 ### Getting Started
 
 Copy `.envrc-example` to `.envrc` and fill in the fields with the values from your account.
-```
+
+```bash
 export AZURE_SUBSCRIPTION_ID=<subscription id>
 export AZURE_CLIENT_ID=<client id>
 export AZURE_TENANT_ID=<tenant id>
@@ -154,6 +165,7 @@ export SSH_KEY=<ssh-rsa...>
 ```
 
 For PowerShell, set the following environment variables
+
 ```
 $env:AZURE_SUBSCRIPTION_ID="<subscription id>"
 $env:AZURE_CLIENT_ID="<client id>"
@@ -165,6 +177,7 @@ $env:SSH_KEY="<ssh-rsa...>"
 > NOTE: The the SSH_KEY is used in the Terraform plan to create an AKS cluster. It is the public SSH key used to access the cluster. It's not actually used; however, it's a required parameter for creating a new cluster.
 
 **Setup Azure CLI**
+
 - Follow the instructions for your platform [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
   * macOS: `brew update && brew install azure-cli`
 - Login with the azure-cli
@@ -215,19 +228,23 @@ rake tf:apply
 ```
 
 Creating a new environment with a Network Watcher:
+
 ```
 rake azure:login
 rake network_watcher tf:apply
 ```
+
 You may only have a single Network Watcher per a subscription. Use this carefully if you are working with other team members.
 
 Updating a running environment (e.g. when you change the .tf file):
+
 ```
 rake azure:login
 rake tf:apply
 ```
 
 Checking if your state has diverged from your plan:
+
 ```
 rake azure:login
 rake tf:plan
