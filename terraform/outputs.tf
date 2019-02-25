@@ -139,6 +139,14 @@ output "windows_vm_data_disks" {
   value = ["${var.windows_internal_data_disk}"]
 }
 
+output "windows_vm_nic_name" {
+  value = "${azurerm_network_interface.nic3.name}"
+}
+
+output "linux_vm_nic_name" {
+  value = "${azurerm_network_interface.nic1.name}"
+}
+
 output "monitoring_agent_name" {
   value = "${var.monitoring_agent_name}"
 }
@@ -179,6 +187,14 @@ output "storage_account_blob_container" {
   value = "${azurerm_storage_container.blob.name}"
 }
 
-output "cluster_fqdn" {
-  value = "${azurerm_kubernetes_cluster.test.fqdn}"
+output "mysql_server_name" {
+  value = "${azurerm_mysql_server.mysql.name}"
+}
+
+output "mysql_database_name" {
+  value = "${azurerm_mysql_database.mysql.name}"
+}
+
+output "lb_name" {
+  value = "${module.azurerm_lb.azurerm_lb_name}"
 }

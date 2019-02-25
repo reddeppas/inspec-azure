@@ -635,28 +635,63 @@ resource "azurerm_sql_database" "sql-database" {
   tags {}
 }
 
-resource "azurerm_kubernetes_cluster" "test" {
-  name                = "inspecakstest"
-  location            = "${azurerm_resource_group.rg.location}"
+resource "random_string" "mysql_server" {
+  length  = 10
+  special = false
+  upper   = false
+}
+
+resource "azurerm_mysql_server" "mysql" {
+  name                = "${random_string.mysql_server.result}-mysqlsvr"
+  location            = "westeurope"
   resource_group_name = "${azurerm_resource_group.rg.name}"
-  dns_prefix          = "inspecaksagent1"
 
-  agent_pool_profile {
-    name            = "inspecaks"
-    count           = 5
-    vm_size         = "Standard_DS1_v2"
-    os_type         = "Linux"
-    os_disk_size_gb = 30
+  sku {
+    name     = "B_Gen4_2"
+    capacity = "2"
+    tier     = "Basic"
+    family   = "Gen4"
   }
-  linux_profile {
-    admin_username = "inspecuser1"
 
-    ssh_key {
-      key_data = "${var.ssh_key}"
-    }
+  storage_profile {
+    storage_mb            = "5120"
+    backup_retention_days = "7"
+    geo_redundant_backup  = "Disabled"
   }
-  service_principal {
-    client_id     = "${var.client_id}"
-    client_secret = "${var.client_secret}"
-  }
+
+  administrator_login          = "${terraform.workspace}"
+  administrator_login_password = "P4assw0rd!"
+  version                      = "5.7"
+  ssl_enforcement              = "Enabled"
+}
+
+resource "azurerm_mysql_database" "mysql" {
+  name                = "mydatabase"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+  server_name         = "${azurerm_mysql_server.mysql.name}"
+  charset             = "utf8"
+  collation           = "utf8_unicode_ci"
+}
+
+resource "azurerm_mysql_firewall_rule" "mysql" {
+  name                = "mydatabase-fwrules"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+  server_name         = "${azurerm_mysql_server.mysql.name}"
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "255.255.255.255"
+}
+
+resource "random_string" "lb-random" {
+  length  = 10
+  special = false
+  upper   = false
+}
+module "azurerm_lb" {
+  source              = "modules/load_balancer"
+  use_loadbalancer    = "true"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+  lb_name             = "${random_string.lb-random.result}-lb"
+  location            = "${var.location}"
+  remote_port         = "${var.remote_port}"
+  lb_port             = "${var.lb_port}"
 }
